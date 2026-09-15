@@ -26,9 +26,39 @@ Useful options include `--image-size`, `--epochs`, `--batch-size`, `--learning-r
 
 Training outputs include the best `.keras` model, `history.json`, accuracy/loss plots, a confusion matrix, and per-class precision/recall/F1 metrics.
 
+## Full pipeline artifacts
+
+Generate the EDA figures and website data after downloading the dataset:
+
+```bash
+python scripts/run_eda.py
+python scripts/build_results.py
+python -m http.server 8000 --directory site/dist
+```
+
+Then open `http://localhost:8000` to view the project dashboard. It presents the class distribution, representative images, image statistics, model comparison, learning curves, confusion matrices, and the reproducible workflow. Generated model reports and plots are kept under ignored `artifacts/`; the dashboard-ready figures and JSON are stored under `site/dist/`.
+
+The project synopsis and detailed report are available as both Markdown source and formatted Word documents:
+
+- `docs/project_synopsis.md` and `docs/traffic_sign_recognition_synopsis.docx`
+- `docs/project_report.md` and `docs/traffic_sign_recognition_project_report.docx`
+
+The report records the completed full-data demonstration runs: 51.75% test accuracy for the custom CNN after three epochs and 53.09% for MobileNetV2 after one epoch. These are reproducible CPU-feasible runs; use matched longer GPU training for a final performance benchmark.
+
 ## Google Colab
 
 Open `notebooks/traffic_sign_recognition_colab.ipynb` in Colab. The notebook installs the pinned dependencies, downloads and verifies the archive automatically, previews class balance and sample images, trains both models, evaluates them, and runs single-image inference. Enable a GPU runtime for full training.
+
+## Project structure
+
+```text
+scripts/                         dataset, EDA, result, and document builders
+src/traffic_sign_recognition/    reusable data, model, training, evaluation, prediction code
+notebooks/                       end-to-end Google Colab notebook
+site/dist/                       static project website
+docs/                            synopsis and project report
+tests/                           preprocessing, labels, models, and downloader tests
+```
 
 ## Citation and attribution
 
