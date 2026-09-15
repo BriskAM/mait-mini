@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+.ipynb_checkpoints/
+
+# Downloaded data and generated artifacts
+data/raw/
+data/processed/
+artifacts/
+*.zip
+*.keras
+*.h5
+*.csv
+*.png
+*.log
+
+# Local credentials and notebook runtime files
+.env
+credentials.json
+*.key
