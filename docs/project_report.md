@@ -19,3 +19,7 @@ The recorded runs use the full dataset and Colab GPU training. The custom CNN wa
 ## Limitations and future work
 
 The classifier expects a cropped sign image and is not a detector or driving system. Future work should use matched longer training, class-aware sampling, calibration, out-of-distribution detection, and an object-detection front end for full scenes.
+
+## Literature survey
+
+The design is grounded in verified primary research and official documentation. Stallkamp et al. introduced GTSRB as a realistic multi-class traffic-sign benchmark, motivating the 43-class scope, EDA, augmentation, and official-test evaluation. Sandler et al. introduced MobileNetV2’s efficient inverted-residual architecture, motivating the lightweight transfer-learning comparison. Kingma and Ba introduced Adam, which is used as the practical baseline optimizer. Selvaraju et al. introduced Grad-CAM, which is used for qualitative visual inspection of model attention. The scikit-learn `GroupShuffleSplit` documentation supports grouping related samples before validation. TensorFlow and Keras documentation support streaming and prefetched `tf.data` pipelines, training-time augmentation, early stopping, learning-rate reduction, and checkpoint saving. A detailed source-to-code mapping is provided in `docs/literature_survey.md`.

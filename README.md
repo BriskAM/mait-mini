@@ -93,6 +93,7 @@ The project synopsis and detailed report are available as both Markdown source a
 - `docs/project_report.md` and `docs/traffic_sign_recognition_project_report.docx`
 - PDF exports: `docs/traffic_sign_recognition_synopsis.pdf` and `docs/traffic_sign_recognition_project_report.pdf`
 - Presenter guide: `docs/traffic_sign_recognition_presenter_guide.docx` and `docs/traffic_sign_recognition_presenter_guide.pdf`
+- Verified literature survey and source-to-code mapping: `docs/literature_survey.md`
 
 The DOCX and PDF deliverables use an IEEE-style two-column paper layout with Times New Roman typography, numbered sections, abstracts, index terms, compact tables, figures, results, limitations, and references.
 
