@@ -1,0 +1,4 @@
+# Apple Silicon acceleration for the local M1/M2/M3 environment.
+# Install this after requirements.txt with:
+#   uv pip install --python .venv/bin/python -r requirements-macos.txt
+tensorflow-metal==1.2.0

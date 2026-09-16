@@ -14,7 +14,7 @@ Images are resized and normalized. A grouped validation split reduces leakage fr
 
 ## Results
 
-The recorded runs use the full dataset: custom CNN for three epochs and MobileNetV2 for one epoch. Accuracy was 51.75% and 53.09%, respectively; macro F1 was 36.44% and 42.24%. These are demonstration results rather than a maximum-performance claim because the epoch budgets differ.
+The recorded runs use the full dataset and matched five-epoch Apple M1 Metal GPU training. Accuracy was 56.90% for the custom CNN and 62.86% for MobileNetV2; macro F1 was 56.19% and 55.74%, respectively. MobileNetV2 leads on accuracy, while the custom CNN is slightly ahead on macro F1.
 
 ## Limitations and future work
 

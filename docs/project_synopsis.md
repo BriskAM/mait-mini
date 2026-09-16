@@ -6,10 +6,10 @@ This project builds a reproducible TensorFlow/Keras pipeline for classifying the
 
 | Model | Test accuracy | Macro F1 |
 |---|---:|---:|
-| Custom CNN, 3 epochs | 51.75% | 36.44% |
-| MobileNetV2, 1 epoch | 53.09% | 42.24% |
+| Custom CNN, 5 epochs, M1 Metal GPU | 56.90% | 56.19% |
+| MobileNetV2, 5 epochs, M1 Metal GPU | 62.86% | 55.74% |
 
-The runs are CPU-feasible demonstrations; matched longer GPU training is recommended for a final benchmark.
+These are reproducible five-epoch baseline runs on Apple M1 Metal GPU; longer tuned training is recommended for a final benchmark.
 
 ## Scope
 

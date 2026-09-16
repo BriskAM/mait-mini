@@ -80,9 +80,11 @@ def add_figure(doc, path: Path, caption: str, width: float = 3.15):
         return
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.keep_with_next = True
     p.add_run().add_picture(str(path), width=Inches(width))
     c = doc.add_paragraph(caption)
     c.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    c.paragraph_format.keep_together = True
     c.runs[0].italic = True
     c.runs[0].font.size = Pt(9)
 
@@ -182,7 +184,7 @@ def synopsis():
     for model in load_metrics():
         rows.append([model["name"].replace("_", " ").title(), f"{model['accuracy']:.2%}", f"{model['macro_f1']:.2%}"])
     add_table(doc, ["Model", "Test accuracy", "Macro F1"], rows)
-    doc.add_paragraph("The recorded runs use the full training and official test sets. The custom CNN was trained for three epochs and MobileNetV2 for one epoch as CPU-feasible demonstration runs; longer GPU training is recommended for a final benchmark.")
+    doc.add_paragraph("The recorded runs use the full training and official test sets. Both models were trained for five matched epochs with class balancing on the Apple M1 Metal GPU. These are reproducible project runs, not a claim of the best possible GTSRB score.")
     doc.add_heading("7. Deliverables", level=1)
     doc.add_paragraph("Source modules live in src/traffic_sign_recognition. Reproducible commands are documented in README.md. The Colab notebook is notebooks/traffic_sign_recognition_colab.ipynb, the static website is site/dist, and the detailed report is docs/traffic_sign_recognition_project_report.docx.")
     doc.add_heading("8. Expected Impact", level=1)
@@ -217,14 +219,14 @@ def report():
     doc.add_heading("6.2 MobileNetV2 comparison", level=2)
     doc.add_paragraph("MobileNetV2 provides a lightweight transfer-learning architecture. The project supports pretrained ImageNet weights when available and a no-pretrained option for offline or smoke-test execution. Its depthwise-separable convolutions provide a useful accuracy/compute comparison with the custom baseline.")
     doc.add_heading("7. Training Protocol", level=1)
-    add_table(doc, ["Setting", "Custom CNN", "MobileNetV2"], [["Input size", "64 × 64", "96 × 96"], ["Seed", "42", "42"], ["Epochs in recorded run", "3", "1"], ["Batch size", "128", "128"], ["Validation", "Grouped split", "Grouped split"], ["Callbacks", "Early stopping, LR reduction, checkpoint", "Early stopping, LR reduction, checkpoint"]])
+    add_table(doc, ["Setting", "Custom CNN", "MobileNetV2"], [["Input size", "64 × 64", "96 × 96"], ["Seed", "42", "42"], ["Epochs in recorded run", "5", "5"], ["Batch size", "128", "128"], ["Validation", "Grouped split", "Grouped split"], ["Hardware", "Apple M1 Metal GPU", "Apple M1 Metal GPU"], ["Callbacks", "Early stopping, LR reduction, checkpoint", "Early stopping, LR reduction, checkpoint"]])
     doc.add_paragraph("Each run saves the best Keras model, a JSON history, training curves, a classification report, and a confusion matrix under artifacts/models. Repeated execution is deterministic at the seed and data-split level, subject to TensorFlow and hardware determinism.")
     add_figure(doc, ARTIFACTS / "models/custom_cnn/training_curves.png", "Figure 5. Custom CNN training and validation curves.")
     add_figure(doc, ARTIFACTS / "models/mobilenet_v2/training_curves.png", "Figure 6. MobileNetV2 training and validation curves.")
     doc.add_heading("8. Results", level=1)
     metrics = load_metrics()
     add_table(doc, ["Model", "Test accuracy", "Macro F1"], [[m["name"].replace("_", " ").title(), f"{m['accuracy']:.2%}", f"{m['macro_f1']:.2%}"] for m in metrics])
-    doc.add_paragraph("In these recorded full-data demonstration runs, MobileNetV2 is ahead of the custom CNN on both reported measures. The comparison is informative but not a claim of maximum achievable performance because the runs use different epoch budgets and were intentionally kept practical on CPU. A fair final benchmark should train both models for a matched budget on GPU.")
+    doc.add_paragraph("In these matched full-data runs, MobileNetV2 is ahead on overall accuracy, while the custom CNN is slightly ahead on macro F1. This shows why both aggregate accuracy and class-balanced metrics matter. The results are a reproducible five-epoch baseline rather than a maximum-performance claim.")
     add_figure(doc, ARTIFACTS / "models/model_comparison.png", "Figure 7. Test accuracy and macro F1 comparison.")
     add_figure(doc, ARTIFACTS / "models/custom_cnn/evaluation/confusion_matrix.png", "Figure 8. Custom CNN confusion matrix.")
     add_figure(doc, ARTIFACTS / "models/mobilenet_v2/evaluation/confusion_matrix.png", "Figure 9. MobileNetV2 confusion matrix.")

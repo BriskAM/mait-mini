@@ -34,7 +34,13 @@ def main():
     p.add_argument("--max-train-samples", type=int)
     p.add_argument("--max-test-samples", type=int)
     p.add_argument("--no-pretrained", action="store_true")
+    p.add_argument("--balanced", action="store_true", help="Use inverse-frequency class weights")
+    p.add_argument("--require-gpu", action="store_true", help="Fail instead of falling back to CPU")
     args = p.parse_args(); set_seed(args.seed)
+    gpus = tf.config.list_physical_devices("GPU")
+    if args.require_gpu and not gpus:
+        raise RuntimeError("No TensorFlow GPU is visible. Install the Apple Metal plugin and check macOS GPU access.")
+    print("training_device=" + (gpus[0].name if gpus else "CPU"))
     image_size = args.image_size or (96 if args.model == "mobilenet_v2" else 64)
     output = args.output_dir or Path("artifacts/models") / args.model
     train, test = load_labeled_data(args.data_dir)
@@ -47,17 +53,22 @@ def main():
     model = build_model(args.model, image_size, pretrained=not args.no_pretrained, seed=args.seed)
     model.compile(optimizer=tf.keras.optimizers.Adam(args.learning_rate), loss="sparse_categorical_crossentropy", metrics=["accuracy"])
     output.mkdir(parents=True, exist_ok=True)
+    class_weight = None
+    if args.balanced:
+        counts = np.bincount(train["label"].to_numpy(), minlength=43)
+        total = counts.sum()
+        class_weight = {i: float(total / (43 * count)) for i, count in enumerate(counts) if count}
     callbacks = [
         tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=5, mode="max", restore_best_weights=True),
         tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.3, patience=2, min_lr=1e-6),
         tf.keras.callbacks.ModelCheckpoint(output / "model.keras", monitor="val_accuracy", mode="max", save_best_only=True),
     ]
-    history = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=callbacks)
+    history = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=callbacks, class_weight=class_weight)
     model.save(output / "model.keras")
     save_history(history, output)
     report = save_evaluation(model, test_ds, output / "evaluation")
     with (output / "config.json").open("w") as f:
-        json.dump({"model": args.model, "image_size": image_size, "num_classes": 43, "seed": args.seed, "test_accuracy": report["accuracy"]}, f, indent=2)
+        json.dump({"model": args.model, "image_size": image_size, "num_classes": 43, "seed": args.seed, "test_accuracy": report["accuracy"], "balanced": args.balanced, "training_device": gpus[0].name if gpus else "CPU"}, f, indent=2)
     print(f"Saved model and reports under {output}")
 
 

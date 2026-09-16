@@ -30,6 +30,14 @@ def save_evaluation(model, dataset, output_dir: Path, class_names=None):
     report = classification_report(y_true, y_pred, labels=list(range(len(names))), target_names=names, output_dict=True, zero_division=0)
     with (output_dir / "classification_report.json").open("w") as f: json.dump(report, f, indent=2)
     cm = confusion_matrix(y_true, y_pred, labels=list(range(len(names))))
+    np.save(output_dir / "confusion_matrix.npy", cm)
+    top_confusions = []
+    for true_label in range(len(names)):
+        for predicted_label in range(len(names)):
+            if true_label != predicted_label and cm[true_label, predicted_label] > 0:
+                top_confusions.append({"true_class": true_label, "predicted_class": predicted_label, "count": int(cm[true_label, predicted_label])})
+    top_confusions.sort(key=lambda item: item["count"], reverse=True)
+    with (output_dir / "top_confusions.json").open("w") as f: json.dump(top_confusions[:25], f, indent=2)
     fig, ax = plt.subplots(figsize=(12, 10)); im = ax.imshow(cm, cmap="Blues"); fig.colorbar(im, ax=ax)
     ax.set_xlabel("Predicted"); ax.set_ylabel("True"); ax.set_title("GTSRB confusion matrix")
     ax.set_xticks(range(len(names))); ax.set_yticks(range(len(names)))

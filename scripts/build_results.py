@@ -32,7 +32,7 @@ def main():
         rows.append({"name": name, "accuracy": float(config.get("test_accuracy", report.get("accuracy", 0))), "macro_f1": float(report.get("macro avg", {}).get("f1-score", 0)), "path": str(model_dir)})
         assets = args.website_dir / "assets"
         assets.mkdir(parents=True, exist_ok=True)
-        for source_name, target_name in (("training_curves.png", f"{name}_training_curves.png"), ("evaluation/confusion_matrix.png", f"{name}_confusion_matrix.png")):
+        for source_name, target_name in (("training_curves.png", f"{name}_training_curves.png"), ("evaluation/confusion_matrix.png", f"{name}_confusion_matrix.png"), ("evaluation/top_confusions.png", f"{name}_top_confusions.png")):
             source = model_dir / source_name
             if source.exists():
                 (assets / target_name).write_bytes(source.read_bytes())
