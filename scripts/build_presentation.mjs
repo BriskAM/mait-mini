@@ -90,10 +90,10 @@ notes(slide, "One epoch means one pass through the training data. Loss is the er
 slide = base("Measured results", "07 / official test set");
 await addImage(slide, "models/model_comparison.png", { left: 80, top: 180, width: 600, height: 380 }, "Model accuracy and macro F1 comparison");
 box(slide, "Custom CNN", { left: 760, top: 210, width: 300, height: 35 }, { fontSize: 23, color: colors.cyan, bold: true });
-box(slide, "56.90% accuracy\n56.19% macro F1", { left: 760, top: 260, width: 350, height: 85 }, { fontSize: 28 });
+box(slide, "97.12% accuracy\n95.14% macro F1", { left: 760, top: 260, width: 350, height: 85 }, { fontSize: 28 });
 box(slide, "MobileNetV2", { left: 760, top: 400, width: 300, height: 35 }, { fontSize: 23, color: colors.purple, bold: true });
-box(slide, "62.86% accuracy\n55.74% macro F1", { left: 760, top: 450, width: 350, height: 85 }, { fontSize: 28 });
-notes(slide, "These are full-dataset matched five-epoch runs on the Apple M1 Metal GPU. MobileNetV2 leads on overall accuracy, while the custom CNN is slightly ahead on macro F1. This is a reproducible baseline, not a maximum-performance benchmark.");
+box(slide, "76.18% accuracy\n68.23% macro F1", { left: 760, top: 450, width: 350, height: 85 }, { fontSize: 28 });
+notes(slide, "These are full-dataset Colab GPU runs: 30 epochs for the custom CNN and 25 for MobileNetV2. The custom CNN leads on both metrics. The frozen MobileNetV2 transfer-learning configuration needs further fine-tuning before it can be compared as a production candidate.");
 
 slide = base("Learning curves and error analysis", "08 / interpretation");
 await addImage(slide, "models/custom_cnn/training_curves.png", { left: 75, top: 180, width: 500, height: 250 }, "Custom CNN learning curves");
@@ -110,11 +110,11 @@ notes(slide, "Grad-CAM is an explanation aid, not proof that the model reasons l
 
 slide = base("Limitations and next steps", "10 / conclusion");
 box(slide, "Current boundary", { left: 90, top: 190, width: 300, height: 40 }, { fontSize: 26, color: colors.orange, bold: true });
-box(slide, "Cropped-image classification only\nNot safety-certified\nMatched five-epoch M1 Metal GPU baseline", { left: 90, top: 250, width: 470, height: 150 }, { fontSize: 23 });
+box(slide, "Cropped-image classification only\nNot safety-certified\nColab GPU benchmark: 30/25 epochs", { left: 90, top: 250, width: 470, height: 150 }, { fontSize: 23 });
 box(slide, "Next experiment", { left: 690, top: 190, width: 300, height: 40 }, { fontSize: 26, color: colors.cyan, bold: true });
-box(slide, "Run matched multi-epoch training with --require-gpu on a host that exposes the M1 Metal device\nAdd class balancing and compare learning rates\nExtend to YOLO-style detection for full scenes", { left: 690, top: 250, width: 480, height: 170 }, { fontSize: 23 });
+box(slide, "Fine-tune MobileNetV2 instead of freezing its backbone\nRepeat with class weighting and learning-rate sweeps\nExtend to YOLO-style detection for full scenes", { left: 690, top: 250, width: 480, height: 170 }, { fontSize: 23 });
 box(slide, "Viva point: a trustworthy result includes the data boundary, split strategy, metrics, errors, and limitations.", { left: 90, top: 555, width: 1050, height: 50 }, { fontSize: 23, color: colors.purple, bold: true });
-notes(slide, "Close by stating the boundary clearly. The full-data results were matched five-epoch runs on the Apple M1 Metal GPU. Mention class imbalance, cropped inputs, the optional YOLO detection scaffold, and the need for safety validation before any real-world use.");
+notes(slide, "Close by stating the boundary clearly. The full-data results came from the standalone Colab notebook and were saved with GPU evidence. Mention class imbalance, cropped inputs, MobileNetV2 fine-tuning as the next experiment, the optional YOLO scaffold, and the need for safety validation before real-world use.");
 
 await fs.mkdir(path.dirname(OUT), { recursive: true });
 await (await PresentationFile.exportPptx(deck)).save(OUT);

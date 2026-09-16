@@ -2,14 +2,14 @@
   "models": [
     {
       "name": "custom_cnn",
-      "accuracy": 0.5690419635787807,
-      "macro_f1": 0.561917951947299,
+      "accuracy": 0.9711797307996833,
+      "macro_f1": 0.9513587054275447,
       "path": "artifacts/models/custom_cnn"
     },
     {
       "name": "mobilenet_v2",
-      "accuracy": 0.6285827395091053,
-      "macro_f1": 0.5574213737847707,
+      "accuracy": 0.7617577197149644,
+      "macro_f1": 0.6822941052077699,
       "path": "artifacts/models/mobilenet_v2"
     }
   ]
