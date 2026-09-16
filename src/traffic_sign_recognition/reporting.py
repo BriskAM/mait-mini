@@ -13,10 +13,11 @@ def save_history(history, output_dir: Path):
     with (output_dir / "history.json").open("w") as f:
         json.dump({k: [float(x) for x in v] for k, v in history.history.items()}, f, indent=2)
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    epochs = list(range(1, len(history.history.get("accuracy", [])) + 1))
     for metric, ax in (("accuracy", axes[0]), ("loss", axes[1])):
-        ax.plot(history.history.get(metric, []), label="train")
-        ax.plot(history.history.get("val_" + metric, []), label="validation")
-        ax.set_title(metric.title()); ax.set_xlabel("Epoch"); ax.legend()
+        ax.plot(epochs, history.history.get(metric, []), marker="o", label="train")
+        ax.plot(epochs, history.history.get("val_" + metric, []), marker="o", label="validation")
+        ax.set_title(metric.title()); ax.set_xlabel("Epoch"); ax.set_xticks(epochs); ax.legend()
     fig.tight_layout(); fig.savefig(output_dir / "training_curves.png", dpi=140); plt.close(fig)
 
 
