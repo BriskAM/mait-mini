@@ -41,18 +41,41 @@ def add_table(doc, headers, rows):
     table = doc.add_table(rows=1, cols=len(headers))
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     table.style = "Table Grid"
+    table.autofit = False
+    table_width_twips = 4536
+    column_width_twips = table_width_twips // len(headers)
+    column_width = Inches(3.15 / len(headers))
+    for row in table.rows:
+        for cell in row.cells:
+            cell.width = column_width
     for cell, header in zip(table.rows[0].cells, headers):
         shade(cell, "173B57")
         set_cell_text(cell, header, bold=True, color="FFFFFF")
     for row in rows:
         cells = table.add_row().cells
         for cell, value in zip(cells, row):
+            cell.width = column_width
             set_cell_text(cell, value)
+    tbl_pr = table._tbl.tblPr
+    tbl_width = tbl_pr.find(qn("w:tblW"))
+    if tbl_width is None:
+        tbl_width = OxmlElement("w:tblW")
+        tbl_pr.append(tbl_width)
+    tbl_width.set(qn("w:type"), "dxa")
+    tbl_width.set(qn("w:w"), str(table_width_twips))
+    layout = tbl_pr.find(qn("w:tblLayout"))
+    if layout is None:
+        layout = OxmlElement("w:tblLayout")
+        tbl_pr.append(layout)
+    layout.set(qn("w:type"), "fixed")
+    grid = table._tbl.tblGrid
+    for col, _ in zip(grid.gridCol_lst, headers):
+        col.set(qn("w:w"), str(column_width_twips))
     doc.add_paragraph()
     return table
 
 
-def add_figure(doc, path: Path, caption: str, width: float = 6.15):
+def add_figure(doc, path: Path, caption: str, width: float = 3.15):
     if not path.exists():
         return
     p = doc.add_paragraph()
@@ -68,54 +91,66 @@ def setup(doc: Document, title: str):
     section = doc.sections[0]
     section.page_width = Inches(8.5)
     section.page_height = Inches(11)
-    section.top_margin = Inches(0.7)
-    section.bottom_margin = Inches(0.7)
-    section.left_margin = Inches(0.75)
-    section.right_margin = Inches(0.75)
+    section.top_margin = Inches(0.65)
+    section.bottom_margin = Inches(0.65)
+    section.left_margin = Inches(0.7)
+    section.right_margin = Inches(0.7)
+    sect_pr = section._sectPr
+    cols = sect_pr.find(qn("w:cols"))
+    if cols is None:
+        cols = OxmlElement("w:cols")
+        sect_pr.append(cols)
+    cols.set(qn("w:num"), "2")
+    cols.set(qn("w:space"), "540")
     normal = doc.styles["Normal"]
-    normal.font.name = "Aptos"
-    normal.font.size = Pt(10.5)
-    normal.font.color.rgb = RGBColor(31, 41, 55)
-    for style_name, size, color in (("Title", 26, "173B57"), ("Heading 1", 17, "173B57"), ("Heading 2", 13, "0F766E")):
+    normal.font.name = "Times New Roman"
+    normal._element.rPr.rFonts.set(qn("w:eastAsia"), "Times New Roman")
+    normal.font.size = Pt(10)
+    normal.font.color.rgb = RGBColor(0, 0, 0)
+    normal.paragraph_format.line_spacing = 1.0
+    for style_name, size, color in (("Title", 18, "000000"), ("Heading 1", 10, "000000"), ("Heading 2", 10, "000000")):
         style = doc.styles[style_name]
-        style.font.name = "Aptos Display"
+        style.font.name = "Times New Roman"
+        style._element.rPr.rFonts.set(qn("w:eastAsia"), "Times New Roman")
         style.font.size = Pt(size)
         style.font.bold = True
         style.font.color.rgb = RGBColor.from_string(color)
+        style.paragraph_format.space_before = Pt(6)
+        style.paragraph_format.space_after = Pt(3)
+        ppr = style._element.get_or_add_pPr()
+        border = ppr.find(qn("w:pBdr"))
+        if border is not None:
+            ppr.remove(border)
+    doc.styles["Heading 1"].font.all_caps = True
     header = section.header.paragraphs[0]
-    header.text = "GTSRB Traffic-Sign Recognition | MAIT Mini Project"
+    header.text = "GTSRB Traffic Sign Recognition"
     header.runs[0].font.size = Pt(8)
-    header.runs[0].font.color.rgb = RGBColor(100, 116, 139)
+    header.runs[0].font.name = "Times New Roman"
+    header.runs[0].font.color.rgb = RGBColor(0, 0, 0)
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    footer.add_run("Classification-only pipeline • Generated from reproducible run artifacts")
+    footer.add_run("MAIT Mini Project")
     footer.runs[0].font.size = Pt(8)
-    footer.runs[0].font.color.rgb = RGBColor(100, 116, 139)
+    footer.runs[0].font.name = "Times New Roman"
+    footer.runs[0].font.color.rgb = RGBColor(0, 0, 0)
     doc.core_properties.title = title
     doc.core_properties.subject = "GTSRB traffic-sign image classification"
     doc.core_properties.author = "MAIT Mini Project"
 
 
 def title_page(doc: Document, title: str, subtitle: str):
-    for _ in range(3):
-        doc.add_paragraph()
-    p = doc.add_paragraph()
+    p = doc.add_paragraph(style="Title")
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run(title)
-    r.bold = True; r.font.size = Pt(28); r.font.color.rgb = RGBColor(23, 59, 87)
+    p.add_run(title)
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r = p.add_run(subtitle)
-    r.font.size = Pt(15); r.font.color.rgb = RGBColor(15, 118, 110)
+    r.font.size = Pt(11); r.font.name = "Times New Roman"; r.font.color.rgb = RGBColor(0, 0, 0)
+    p = doc.add_paragraph("Akshit Mehta")
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.runs[0].font.name = "Times New Roman"
+    p.runs[0].font.size = Pt(10)
     doc.add_paragraph()
-    p = doc.add_paragraph("A complete, reproducible TensorFlow/Keras pipeline for the 43-class German Traffic Sign Recognition Benchmark.")
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.runs[0].font.size = Pt(12)
-    for _ in range(7): doc.add_paragraph()
-    p = doc.add_paragraph("Prepared for academic/project documentation\nSeptember 2026")
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.runs[0].font.size = Pt(11)
-    doc.add_page_break()
 
 
 def load_metrics():
@@ -126,6 +161,9 @@ def load_metrics():
 def synopsis():
     doc = Document(); setup(doc, "GTSRB Traffic Sign Recognition Project Synopsis")
     title_page(doc, "Project Synopsis", "GTSRB Traffic-Sign Recognition")
+    doc.add_heading("Abstract", level=1)
+    doc.add_paragraph("This synopsis presents a reproducible 43-class traffic-sign image-classification pipeline. The work covers verified dataset acquisition, exploratory analysis, grouped validation, augmented training, model comparison, evaluation, inference, and project communication through a Colab notebook and dashboard website.")
+    doc.add_paragraph("Index Terms—GTSRB, traffic-sign recognition, convolutional neural network, MobileNetV2, image classification.")
     doc.add_heading("1. Project Overview", level=1)
     doc.add_paragraph("This project develops an end-to-end image-classification system for recognizing German traffic signs. It covers data acquisition, integrity validation, exploratory data analysis, preprocessing, augmentation, model training, evaluation, command-line inference, a Colab workflow, and a presentation website.")
     doc.add_heading("2. Problem Statement", level=1)

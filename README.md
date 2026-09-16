@@ -44,6 +44,8 @@ The project synopsis and detailed report are available as both Markdown source a
 - `docs/project_report.md` and `docs/traffic_sign_recognition_project_report.docx`
 - PDF exports: `docs/traffic_sign_recognition_synopsis.pdf` and `docs/traffic_sign_recognition_project_report.pdf`
 
+The DOCX and PDF deliverables use an IEEE-style two-column paper layout with Times New Roman typography, numbered sections, abstracts, index terms, compact tables, figures, results, limitations, and references.
+
 The report records the completed full-data demonstration runs: 51.75% test accuracy for the custom CNN after three epochs and 53.09% for MobileNetV2 after one epoch. These are reproducible CPU-feasible runs; use matched longer GPU training for a final performance benchmark.
 
 ## Google Colab
