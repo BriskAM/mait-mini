@@ -82,7 +82,7 @@ def build():
     custom = next(x for x in results["models"] if x["name"] == "custom_cnn")
     mobile = next(x for x in results["models"] if x["name"] == "mobilenet_v2")
 
-    doc = SimpleDocTemplate(str(OUT), pagesize=A4, rightMargin=1.25 * 0.3937 * inch, leftMargin=3.5 * 0.3937 * inch, topMargin=2.5 * 0.3937 * inch, bottomMargin=1.25 * 0.3937 * inch, title="Traffic Sign Recognition Using Deep Learning - MAIT Semester VII Minor Project Synopsis")
+    doc = SimpleDocTemplate(str(OUT), pagesize=A4, rightMargin=0.75 * inch, leftMargin=0.75 * inch, topMargin=0.75 * inch, bottomMargin=0.75 * inch, title="Traffic Sign Recognition Using Deep Learning - MAIT Semester VII Minor Project Synopsis")
     story = []
     # Cover page follows the MAIT CSE minor-project synopsis structure.
     story += [Spacer(1, 0.45 * inch), paragraph("MAHARAJA AGRASEN INSTITUTE OF TECHNOLOGY", styles["CoverInstitution"]), Spacer(1, 0.18 * inch), paragraph("Department of Information Technology", styles["CoverDepartment"]), Spacer(1, 0.42 * inch), paragraph("TRAFFIC SIGN RECOGNITION\nUSING DEEP LEARNING", styles["CoverTitle"]), Spacer(1, 0.34 * inch), paragraph("MINOR PROJECT SYNOPSIS", styles["CoverSubtitle"]), Spacer(1, 0.28 * inch), paragraph("of", styles["CoverSmall"]), paragraph("BACHELOR OF TECHNOLOGY", styles["CoverDegree"]), paragraph("in", styles["CoverSmall"]), paragraph("INFORMATION TECHNOLOGY", styles["CoverDegree"]), Spacer(1, 0.35 * inch)]
