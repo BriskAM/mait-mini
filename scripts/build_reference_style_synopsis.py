@@ -40,10 +40,24 @@ def specs_table(rows, widths=(2.0 * inch, 2.1 * inch, 2.7 * inch)):
     return table
 
 
+def cover_table(rows, widths=(1.45 * inch, 2.45 * inch, 2.35 * inch)):
+    data = [[Paragraph(str(a), styles["TableCell"]), Paragraph(str(b), styles["TableCell"]), Paragraph(str(c), styles["TableCell"])] for a, b, c in rows]
+    table = Table(data, colWidths=widths)
+    table.setStyle(TableStyle([
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 6),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING", (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]))
+    return table
+
+
 def footer(canvas, doc):
     canvas.saveState()
     canvas.setFont("Times-Roman", 9)
-    canvas.drawCentredString(A4[0] / 2, 0.45 * inch, f"MAIT CSE | Semester VII Minor Project | Page {doc.page}")
+    canvas.drawCentredString(A4[0] / 2, 0.45 * inch, f"MAIT IT | Semester VII Minor Project | Page {doc.page}")
     canvas.restoreState()
 
 
@@ -60,7 +74,7 @@ styles.add(ParagraphStyle(name="CoverAffiliation", parent=styles["BodyText"], fo
 styles.add(ParagraphStyle(name="SectionRef", parent=styles["Heading2"], fontName="Times-Bold", fontSize=13, leading=16, spaceBefore=10, spaceAfter=6, keepWithNext=True))
 styles.add(ParagraphStyle(name="BodyRef", parent=styles["BodyText"], fontName="Times-Roman", fontSize=10.5, leading=14, alignment=TA_LEFT, spaceAfter=8))
 styles.add(ParagraphStyle(name="TableCell", parent=styles["BodyText"], fontName="Times-Roman", fontSize=8.7, leading=11))
-styles.add(ParagraphStyle(name="RefEntry", parent=styles["BodyText"], fontName="Times-Roman", fontSize=9.5, leading=12, leftIndent=14, firstLineIndent=-14, spaceAfter=5))
+styles.add(ParagraphStyle(name="RefEntry", parent=styles["BodyText"], fontName="Times-Roman", fontSize=8.7, leading=10.5, leftIndent=14, firstLineIndent=-14, spaceAfter=3))
 
 
 def build():
@@ -71,18 +85,16 @@ def build():
     doc = SimpleDocTemplate(str(OUT), pagesize=A4, rightMargin=1.25 * 0.3937 * inch, leftMargin=3.5 * 0.3937 * inch, topMargin=2.5 * 0.3937 * inch, bottomMargin=1.25 * 0.3937 * inch, title="Traffic Sign Recognition Using Deep Learning - MAIT Semester VII Minor Project Synopsis")
     story = []
     # Cover page follows the MAIT CSE minor-project synopsis structure.
-    story += [Spacer(1, 0.45 * inch), paragraph("MAHARAJA AGRASEN INSTITUTE OF TECHNOLOGY", styles["CoverInstitution"]), Spacer(1, 0.18 * inch), paragraph("Department of Computer Science & Engineering", styles["CoverDepartment"]), Spacer(1, 0.42 * inch), paragraph("TRAFFIC SIGN RECOGNITION\nUSING DEEP LEARNING", styles["CoverTitle"]), Spacer(1, 0.34 * inch), paragraph("MINOR PROJECT SYNOPSIS", styles["CoverSubtitle"]), Spacer(1, 0.28 * inch), paragraph("of", styles["CoverSmall"]), paragraph("BACHELOR OF TECHNOLOGY", styles["CoverDegree"]), paragraph("in", styles["CoverSmall"]), paragraph("COMPUTER SCIENCE & ENGINEERING", styles["CoverDegree"]), Spacer(1, 0.35 * inch)]
-    story.append(specs_table([
-        ("Project ID", "____________________________", "Semester VII"),
+    story += [Spacer(1, 0.45 * inch), paragraph("MAHARAJA AGRASEN INSTITUTE OF TECHNOLOGY", styles["CoverInstitution"]), Spacer(1, 0.18 * inch), paragraph("Department of Information Technology", styles["CoverDepartment"]), Spacer(1, 0.42 * inch), paragraph("TRAFFIC SIGN RECOGNITION\nUSING DEEP LEARNING", styles["CoverTitle"]), Spacer(1, 0.34 * inch), paragraph("MINOR PROJECT SYNOPSIS", styles["CoverSubtitle"]), Spacer(1, 0.28 * inch), paragraph("of", styles["CoverSmall"]), paragraph("BACHELOR OF TECHNOLOGY", styles["CoverDegree"]), paragraph("in", styles["CoverSmall"]), paragraph("INFORMATION TECHNOLOGY", styles["CoverDegree"]), Spacer(1, 0.35 * inch)]
+    story.append(cover_table([
         ("Student 1", "Akshit Mehta", "Enrollment No.: 00314803123"),
         ("Student 2", "Shashwat Kumar", "Enrollment No.: 00414803123"),
-        ("Student 3", "____________________________", "Enrollment No.: __________________"),
-        ("Guide", "____________________________", "Co-Guide: _______________________"),
-    ], widths=(1.45 * inch, 2.45 * inch, 2.35 * inch)))
+        ("Guide", "Mr. Ajay Kaushik", "Assistant Professor, Department of Information Technology"),
+    ]))
     story += [Spacer(1, 0.34 * inch), paragraph("Submitted in partial fulfillment of the requirements for the Semester VII Minor Project", styles["CoverSmall"]), Spacer(1, 0.28 * inch), paragraph("MAHARAJA AGRASEN INSTITUTE OF TECHNOLOGY\n(Affiliated to Guru Gobind Singh Indraprastha University, Delhi)", styles["CoverAffiliation"]), PageBreak()]
     story += [paragraph("Traffic Sign Recognition Using Deep Learning", styles["TitleRef"]), paragraph("PROJECT SYNOPSIS", styles["ProjectSynopsis"])]
     story += [paragraph("1. Project Title", styles["SectionRef"]), paragraph("Traffic Sign Recognition Using Deep Learning", styles["BodyRef"])]
-    story += [paragraph("2. Academic Context", styles["SectionRef"]), paragraph("This synopsis is prepared for the Semester VII Minor Project of the B.Tech. Computer Science & Engineering programme at Maharaja Agrasen Institute of Technology. The current MAIT CSE notice identifies the minor project as ES-451 with 3 credits, while the GGSIPU CSE syllabus available through MAIT's syllabus page requires a synopsis at the beginning of the semester followed by seminars and progress reports. The exact paper code and team-size rule should be confirmed against the student's applicable batch notice before submission; the third-member field on the cover is intentionally left open because only two student records were provided.", styles["BodyRef"])]
+    story += [paragraph("2. Academic Context", styles["SectionRef"]), paragraph("This synopsis is prepared for the Semester VII Minor Project of the B.Tech. Information Technology programme at Maharaja Agrasen Institute of Technology. MAIT's Semester VII minor-project guidance requires departmental approval and a synopsis in the prescribed format, while the GGSIPU syllabus available through MAIT's syllabus page requires a synopsis at the beginning of the semester followed by seminars and progress reports. The project is supervised by Mr. Ajay Kaushik, identified in MAIT's official Information Technology records as an Assistant Professor. This synopsis records the two students provided by the team and does not include a project ID because none has been assigned.", styles["BodyRef"])]
     story += [paragraph("3. Problem Statement", styles["SectionRef"]), paragraph("Traffic signs communicate rules and warnings, but recognition is difficult when signs are small, tilted, blurred, unevenly illuminated, or visually similar to other classes. The German Traffic Sign Recognition Benchmark contains 43 categories and real-world variation, making it a useful computer-vision classification problem. The project addresses the classification task: given one cropped traffic-sign image, predict its class and confidence. Full-scene object detection and safety-critical driving decisions are outside the scope of this version.", styles["BodyRef"])]
     story += [paragraph("4. Project Abstract", styles["SectionRef"]), paragraph(f"This project builds a reproducible TensorFlow/Keras pipeline for the 43-class German Traffic Sign Recognition Benchmark. The complete archive is downloaded from Zenodo, verified with the published MD5 checksum, and checked for every class ID from 0 through 42. The pipeline performs exploratory data analysis, grouped validation splitting, resizing, normalization, moderate training-only augmentation, model training, official-test evaluation, error analysis, Grad-CAM visualization, and single-image inference. A compact custom CNN trained for 30 epochs on a Colab GPU achieved {custom['accuracy']:.2%} test accuracy and {custom['macro_f1']:.2%} macro F1. A frozen-backbone MobileNetV2 comparison trained for 25 epochs achieved {mobile['accuracy']:.2%} accuracy and {mobile['macro_f1']:.2%} macro F1. The result is an auditable classification system with documented limitations and reproducible artifacts.", styles["BodyRef"])]
     story.append(PageBreak())
@@ -154,8 +166,9 @@ def build():
         "[4] R. R. Selvaraju et al., Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization, ICCV, 2017. https://openaccess.thecvf.com/content_ICCV_2017/papers/Selvaraju_Grad-CAM_Visual_Explanations_ICCV_2017_paper.pdf",
         "[5] scikit-learn, GroupShuffleSplit documentation. https://scikit-learn.org/1.5/modules/generated/sklearn.model_selection.GroupShuffleSplit.html",
         "[6] TensorFlow and Keras official documentation for tf.data, preprocessing layers, and callbacks. https://www.tensorflow.org/guide/data_performance and https://keras.io/api/callbacks/",
-        "[7] Maharaja Agrasen Institute of Technology, CSE syllabus page. https://dev.mait.ac.in/new/index.php/portfolio/syllabus.html",
+        "[7] Maharaja Agrasen Institute of Technology, syllabus page. https://dev.mait.ac.in/new/index.php/portfolio/syllabus.html",
         "[8] Maharaja Agrasen Institute of Technology, 7th Semester Minor Project Synopsis Submission Notice. https://cse.mait.ac.in/pdf/synopsis%20notice%20minor%20project%202023.pdf",
+        "[9] Maharaja Agrasen Institute of Technology, Department of Information Technology, student counselor record for Mr. Ajay Kaushik. https://it.mait.ac.in/index.php/it/counselor?id=541",
     ]
     story.extend(paragraph(ref, styles["RefEntry"]) for ref in references)
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
