@@ -74,7 +74,7 @@ styles.add(ParagraphStyle(name="CoverAffiliation", parent=styles["BodyText"], fo
 styles.add(ParagraphStyle(name="SectionRef", parent=styles["Heading2"], fontName="Times-Bold", fontSize=13, leading=16, spaceBefore=10, spaceAfter=6, keepWithNext=True))
 styles.add(ParagraphStyle(name="BodyRef", parent=styles["BodyText"], fontName="Times-Roman", fontSize=10.5, leading=14, alignment=TA_LEFT, spaceAfter=8))
 styles.add(ParagraphStyle(name="TableCell", parent=styles["BodyText"], fontName="Times-Roman", fontSize=8.7, leading=11))
-styles.add(ParagraphStyle(name="RefEntry", parent=styles["BodyText"], fontName="Times-Roman", fontSize=8.7, leading=10.5, leftIndent=14, firstLineIndent=-14, spaceAfter=3))
+styles.add(ParagraphStyle(name="RefEntry", parent=styles["BodyText"], fontName="Times-Roman", fontSize=8.2, leading=9.5, leftIndent=14, firstLineIndent=-14, spaceAfter=2))
 
 
 def build():
@@ -99,7 +99,7 @@ def build():
     story += [paragraph("4. Project Abstract", styles["SectionRef"]), paragraph("This project proposes a reproducible TensorFlow/Keras pipeline for the 43-class German Traffic Sign Recognition Benchmark. The complete archive will be downloaded from Zenodo, verified with the published MD5 checksum, and checked for every class ID from 0 through 42. The proposed pipeline will perform exploratory data analysis, grouped validation splitting, resizing, normalization, moderate training-only augmentation, model training, official-test evaluation, error analysis, Grad-CAM visualization, and single-image inference. A compact custom CNN will be developed as the baseline, and MobileNetV2 transfer learning will be investigated as a comparison model. The expected outcome is an auditable traffic-sign classification system with documented limitations and reproducible experiment instructions.", styles["BodyRef"])]
     story.append(PageBreak())
 
-    story += [paragraph("5. Literature Survey", styles["SectionRef"]), paragraph("The project design is based on verified primary papers and official documentation. Stallkamp et al. define GTSRB as a multi-category traffic-sign benchmark with changes in distance, illumination, weather, occlusion, and rotation; this motivates the dataset, EDA, and augmentation strategy. Sandler et al. describe MobileNetV2's inverted residuals, linear bottlenecks, and depthwise convolutions; this motivates a lightweight transfer-learning comparison. Kingma and Ba introduce Adam, used as the practical baseline optimizer. Selvaraju et al. introduce Grad-CAM, used to visualize regions contributing to a prediction. Official scikit-learn, TensorFlow, and Keras documentation support grouped validation, streaming input pipelines, augmentation, early stopping, learning-rate reduction, and checkpoint saving.", styles["BodyRef"])]
+    story += [paragraph("5. Literature Survey", styles["SectionRef"]), paragraph("The project design is based on verified primary papers and official documentation. Stallkamp et al. define GTSRB as a multi-category traffic-sign benchmark with changes in distance, illumination, weather, occlusion, and rotation; this motivates the dataset, EDA, and augmentation strategy. Farag studies CNN-based traffic-sign recognition for self-driving applications, supporting the proposed classification focus. Sandler et al. describe MobileNetV2's inverted residuals, linear bottlenecks, and depthwise convolutions; this motivates a lightweight transfer-learning comparison, while Howard et al. provide the earlier MobileNet efficiency perspective. He et al. establish residual learning as a major deep-vision architecture, included as background for modern CNN design. Shorten and Khoshgoftaar survey image augmentation methods, supporting the proposed geometric and photometric transformations. Kingma and Ba introduce Adam, used as the planned baseline optimizer. Selvaraju et al. introduce Grad-CAM, planned for visualizing regions contributing to predictions. Official scikit-learn, TensorFlow, and Keras documentation support grouped validation, streaming input pipelines, augmentation, early stopping, learning-rate reduction, and checkpoint saving.", styles["BodyRef"])]
     story.append(specs_table([
         ("Source", "Verified contribution", "Project use"),
         ("Stallkamp et al. 2011", "GTSRB benchmark and visual variation", "Dataset boundary and evaluation"),
@@ -140,7 +140,7 @@ def build():
     ]))
     story += [paragraph("9. Expected Outputs", styles["SectionRef"]), paragraph("The proposed experiments will generate a Keras model, training history, learning curves, classification report, confusion matrix, and error-analysis plot for each selected model. The analysis will compare accuracy, macro F1, per-class performance, and confusion patterns. The planned Colab notebook will download the dataset directly, train both models with GPU support, and package the generated models and reports into a downloadable ZIP.", styles["BodyRef"])]
     story.append(specs_table([
-        ("Model", "Input / run", "Measured official-test result"),
+        ("Model", "Planned input / run", "Planned evaluation outputs"),
         ("Custom CNN", "64 × 64; configurable Colab GPU training", "Accuracy, macro F1, per-class metrics, and confusion matrix"),
         ("MobileNetV2", "128 × 128; configurable Colab GPU training", "Accuracy, macro F1, per-class metrics, and confusion matrix"),
     ]))
@@ -169,6 +169,10 @@ def build():
         "[7] Maharaja Agrasen Institute of Technology, syllabus page. https://dev.mait.ac.in/new/index.php/portfolio/syllabus.html",
         "[8] Maharaja Agrasen Institute of Technology, 7th Semester Minor Project Synopsis Submission Notice. https://cse.mait.ac.in/pdf/synopsis%20notice%20minor%20project%202023.pdf",
         "[9] Maharaja Agrasen Institute of Technology, Department of Information Technology, student counselor record for Mr. Ajay Kaushik. https://it.mait.ac.in/index.php/it/counselor?id=541",
+        "[10] A. G. Howard et al., MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications, CVPR, 2017. https://arxiv.org/abs/1704.04861",
+        "[11] K. He, X. Zhang, S. Ren, and J. Sun, Deep Residual Learning for Image Recognition, CVPR, 2016. https://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html",
+        "[12] C. Shorten and T. M. Khoshgoftaar, A Survey on Image Data Augmentation for Deep Learning, Journal of Big Data, 2019. https://journalofbigdata.springeropen.com/articles/10.1186/s40537-019-0197-0",
+        "[13] W. Farag, Recognition of Traffic Signs by Convolutional Neural Nets for Self-Driving Vehicles, KES, 2018. https://doi.org/10.3233/KES-180385",
     ]
     story.extend(paragraph(ref, styles["RefEntry"]) for ref in references)
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
