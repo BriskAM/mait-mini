@@ -5,6 +5,7 @@ This folder contains the documents and notebook intended for sharing with a team
 ## Contents
 
 - `traffic_sign_recognition_synopsis.pdf` — submission-ready project synopsis.
+- `traffic_sign_recognition_reference_style_synopsis.pdf` — formal synopsis matching the supplied reference layout.
 - `traffic_sign_recognition_synopsis.docx` — editable synopsis source.
 - `traffic_sign_recognition_project_report.pdf` — IEEE-style detailed report with results, figures, limitations, and literature rationale.
 - `traffic_sign_recognition_project_report.docx` — editable report source.
