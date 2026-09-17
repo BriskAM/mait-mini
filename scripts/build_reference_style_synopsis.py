@@ -147,15 +147,15 @@ def build():
     story += [paragraph("10. Scope and Limitations", styles["SectionRef"]), paragraph("The proposed work will focus on classification of cropped sign images and will not claim to be a complete autonomous-driving component. Full-scene object detection, camera tracking, and safety-critical driving decisions will remain outside the scope. The comparison between a custom CNN and MobileNetV2 will be interpreted only within the selected training settings. Possible future extensions include calibration, out-of-distribution detection, fine-tuning, real-time detection, and real-world safety validation.", styles["BodyRef"])]
     story.append(PageBreak())
 
-    story += [paragraph("11. Project Deliverables", styles["SectionRef"]), paragraph("The project is expected to produce a verified dataset downloader, reusable TensorFlow modules, command-line training/evaluation/inference interfaces, EDA and reporting scripts, tests, a standalone Colab notebook, an interactive dashboard, Grad-CAM visualizations, an IEEE-style report, a presenter guide, and an IEEE presentation with speaker notes.", styles["BodyRef"])]
+    story += [paragraph("11. Project Deliverables", styles["SectionRef"]), paragraph("The proposed project will produce the following technical outputs: a verified dataset acquisition pipeline, reusable preprocessing and augmentation modules, a compact CNN baseline, a MobileNetV2 comparison model, evaluation metrics and error-analysis visualizations, a single-image prediction interface, Grad-CAM explanations, and a technical project report documenting the experiments and limitations.", styles["BodyRef"])]
     story.append(specs_table([
-        ("Deliverable", "Location", "Purpose"),
-        ("Colab notebook", "notebooks/traffic_sign_recognition_colab.ipynb", "Standalone GPU execution"),
-        ("Project report", "docs/traffic_sign_recognition_project_report.pdf", "Detailed technical record"),
-        ("Synopsis", "docs/traffic_sign_recognition_synopsis.pdf", "Short project summary"),
-        ("Presenter guide", "docs/traffic_sign_recognition_presenter_guide.pdf", "Beginner explanation and viva preparation"),
-        ("Presentation", "docs/traffic_sign_recognition_ieee_presentation.pptx", "Presentation with speaker notes"),
-        ("Literature survey", "docs/literature_survey.md", "Verified sources and design mapping"),
+        ("Technical deliverable", "Planned output", "Purpose"),
+        ("Dataset pipeline", "Verified downloader and loader", "Reproducible GTSRB acquisition and label handling"),
+        ("Preprocessing", "Resize, normalization, augmentation", "Prepare robust model inputs"),
+        ("Classification models", "Custom CNN and MobileNetV2", "Compare a baseline with transfer learning"),
+        ("Evaluation package", "Metrics, reports, plots, confusion matrix", "Measure performance and error patterns"),
+        ("Inference and explanation", "Single-image prediction and Grad-CAM", "Demonstrate and interpret predictions"),
+        ("Technical report", "Methodology, experiments, limitations", "Document the proposed study and findings"),
     ]))
     story += [paragraph("12. Conclusion", styles["SectionRef"]), paragraph("The proposed project will study the complete machine-learning workflow for traffic-sign recognition, including data acquisition, exploratory analysis, leakage-aware validation, preprocessing, model training, GPU benchmarking, multi-metric evaluation, visual explanation, and technical communication. The study will compare a transparent custom CNN with a lightweight transfer-learning model and will document the resulting findings, limitations, and opportunities for further improvement.", styles["BodyRef"])]
     story += [paragraph("13. References", styles["SectionRef"])]
