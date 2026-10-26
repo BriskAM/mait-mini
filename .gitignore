@@ -15,6 +15,10 @@ artifacts/
 *.csv
 *.png
 !site/data/samples.png
+!report/figures/**/*.png
+!report/assets/*.png
+!report/data/*.csv
+report/node_modules/
 *.log
 
 # Public website and build assets

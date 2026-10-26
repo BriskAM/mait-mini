@@ -1,0 +1,59 @@
+{
+  "mode": "full",
+  "selected_model": "Custom CNN",
+  "selection_criterion": "validation accuracy",
+  "seed": 42,
+  "input": "64x64x3 raw 0-255 pixels",
+  "official_test": {
+    "accuracy": 0.9695961995249406,
+    "macro_f1": 0.9521052633923373,
+    "top3": 0.9902612826603325,
+    "ece": 0.010452141411608348,
+    "n_images": 12630
+  },
+  "comparison": {
+    "Custom CNN": {
+      "Val accuracy": 0.9761,
+      "Test accuracy": 0.9696,
+      "Test macro-F1": 0.9521,
+      "Test top-3": 0.9903,
+      "ECE \u2193": 0.0105,
+      "Params (M)": 0.1162,
+      "Latency (ms/img, bs=1)": 18.0017
+    },
+    "MobileNetV2 (head only)": {
+      "Val accuracy": 0.7258,
+      "Test accuracy": 0.7516,
+      "Test macro-F1": 0.6746,
+      "Test top-3": 0.9118,
+      "ECE \u2193": 0.0413,
+      "Params (M)": 2.3131,
+      "Latency (ms/img, bs=1)": 153.015
+    },
+    "MobileNetV2 (fine-tuned)": {
+      "Val accuracy": 0.9055,
+      "Test accuracy": 0.9126,
+      "Test macro-F1": 0.8659,
+      "Test top-3": 0.9811,
+      "ECE \u2193": 0.0537,
+      "Params (M)": 2.3131,
+      "Latency (ms/img, bs=1)": 153.015
+    }
+  },
+  "config": {
+    "max_train": null,
+    "max_test": null,
+    "cnn_epochs": 30,
+    "ladder_epochs": 15,
+    "head_epochs": 12,
+    "ft_epochs": 15,
+    "eda_sample": 3000,
+    "robust_n": 6000,
+    "tsne_n": 4000
+  },
+  "tensorflow": "2.21.0",
+  "keras": "3.13.2",
+  "gpu": [
+    "/physical_device:GPU:0"
+  ]
+}

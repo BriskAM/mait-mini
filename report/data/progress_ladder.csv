@@ -1,0 +1,10 @@
+step,model,track,change,val_accuracy,val_macro_f1,parameters,best_so_far,gain_vs_previous_best
+0,Majority-class baseline,baseline,Always predict the most common class,0.05852101436424898,0.002571425231915283,0,0.05852101436424898,0.0
+1,Linear classifier on 16x16 pixels,from scratch,Linear classifier on 16x16 pixels,0.701897499556659,0.6106192502096007,33067,0.701897499556659,0.6433764851924101
+2,MLP on 32x32 pixels,from scratch,MLP on 32x32 pixels,0.8324170952296507,0.7797216519769474,825131,0.8324170952296507,0.13051959567299165
+3,Basic CNN (2 conv layers),from scratch,Basic CNN (2 conv layers),0.9336761837205179,0.9181628881636394,1630699,0.9336761837205179,0.10125908849086718
+4,Deeper CNN + BatchNorm + global pooling,from scratch,Deeper CNN + BatchNorm + global pooling,0.9514098244369569,0.937551488516217,116203,0.9514098244369569,0.017733640716439014
+5,"Final custom CNN (+ augmentation, dropout)",from scratch,Adds augmentation and dropout (section 8),0.9760595850328072,0.9693880716366671,116203,0.9760595850328072,0.024649760595850334
+6,"MobileNetV2, frozen backbone",transfer learning,"Pretrained features, new head only",0.7258379145238517,0.652811829260388,2313067,0.9760595850328072,0.0
+7,"MobileNetV2, fine-tuned",transfer learning,Adapt the top backbone layers at a lower LR,0.9054796949813797,0.8892934891560114,2313067,0.9760595850328072,0.0
+8,Ensemble (CNN + MobileNetV2),combined,Average the two models' probabilities,0.9707394928178755,0.9672340333141535,2429270,0.9760595850328072,0.0

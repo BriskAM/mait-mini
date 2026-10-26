@@ -1,0 +1,6 @@
+{
+  "name": "minor-project-report",
+  "private": true,
+  "description": "Builds the ES-451 minor project report (.docx and .pdf)",
+  "dependencies": { "docx": "^9.14.0" }
+}

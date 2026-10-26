@@ -1,0 +1,4 @@
+,Val accuracy,Test accuracy,Test macro-F1,Test top-3,ECE ↓,Params (M),"Latency (ms/img, bs=1)"
+Custom CNN,0.9761,0.9696,0.9521,0.9903,0.0105,0.1162,18.0017
+MobileNetV2 (head only),0.7258,0.7516,0.6746,0.9118,0.0413,2.3131,153.015
+MobileNetV2 (fine-tuned),0.9055,0.9126,0.8659,0.9811,0.0537,2.3131,153.015
