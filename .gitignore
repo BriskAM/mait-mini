@@ -18,18 +18,9 @@ artifacts/
 *.png
 *.log
 
-# Public website assets are intentionally tracked
-!site/
-!site/dist/
-!site/dist/assets/
-!site/dist/data/
-!site/dist/**/*.png
-!site/dist/**/*.json
-!dist/
-!dist/assets/
-!dist/data/
-!dist/**/*.png
-!dist/**/*.json
+# Public website and build assets
+dist/
+site/dist/
 
 # Local credentials and notebook runtime files
 .env
