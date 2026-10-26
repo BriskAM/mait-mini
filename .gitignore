@@ -14,6 +14,7 @@ artifacts/
 *.h5
 *.csv
 *.png
+!site/data/samples.png
 *.log
 
 # Public website and build assets

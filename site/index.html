@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTSRB Sign Reader: traffic-sign recognition in your browser</title>
+<meta name="description" content="A 116,000-parameter CNN that recognises 43 German traffic signs, running entirely in your browser with Grad-CAM explanations, a stress lab and the full experiment results.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 29 27H3z' fill='%23fcfcfb' stroke='%23d03b3b' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<a class="skip" href="#demo">Skip to the demo</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path d="M16 4 28 26H4z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>Sign Reader</a>
+    <nav aria-label="Sections">
+      <a href="#demo">Demo</a><a href="#results">Results</a><a href="#method">How it works</a><a href="#gallery">Gallery</a><a href="#limits">Limits</a>
+    </nav>
+    <div class="nav-actions">
+      <button id="theme-btn" class="btn tiny" type="button" aria-label="Colour theme">Theme: auto</button>
+      <a class="btn tiny" href="https://github.com/BriskAM/mait-mini" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero wrap">
+  <p class="eyebrow">German Traffic Sign Recognition Benchmark &middot; 43 classes</p>
+  <h1>A traffic-sign classifier that runs entirely in your browser</h1>
+  <p class="lede">A compact convolutional network reads cropped road signs, explains each answer with a heat-map, and says when it is too unsure to answer. No server, no upload: the model is a 465 KB file that this page runs on your device.</p>
+  <div class="hero-row">
+    <div class="hero-fig"><div id="hero-number" class="hero-number">96.96%</div><p>of the 12,630 official test images classified correctly, evaluated once on data never used for any decision</p></div>
+    <div id="kpis" class="kpis"></div>
+  </div>
+  <div class="cta">
+    <a class="btn primary" href="#demo">Try the live demo</a>
+    <a class="btn" href="#results">See the results</a>
+    <a href="https://colab.research.google.com/github/BriskAM/mait-mini/blob/main/notebooks/traffic_sign_recognition_demo.ipynb" rel="noopener"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open the experiment notebook in Colab" height="32"></a>
+  </div>
+</section>
+
+<section id="demo" class="wrap section">
+  <div class="sec-head"><p class="eyebrow">Live demo</p><h2>Try it, then try to break it</h2>
+    <p>Choose a test image, drop in a photo, or use your camera. The model answers in milliseconds on your device. Then use the stress lab: it applies the same corruptions used in the evaluation and shows where the model stops being reliable.</p></div>
+  <p id="demo-status" class="status" role="status">Loading the model...</p>
+  <div class="demo-grid">
+    <div class="card demo-input">
+      <div class="tabs" role="tablist" aria-label="Input source">
+        <button role="tab" data-tab="samples" aria-selected="true" type="button">Test images</button>
+        <button role="tab" data-tab="upload" aria-selected="false" tabindex="-1" type="button">Upload</button>
+        <button role="tab" data-tab="camera" aria-selected="false" tabindex="-1" type="button">Camera</button>
+      </div>
+      <div id="pane-samples" class="pane">
+        <div class="row">
+          <label for="class-select">Class</label><select id="class-select"></select>
+          <button id="btn-random" class="btn tiny" type="button">Random</button>
+          <button id="btn-hard" class="btn tiny" type="button">Hard case</button>
+        </div>
+        <p class="hint">116 images from the official test set (<span id="hard-count">30</span> are ones the notebook's Keras model gets wrong; outlined in the strip).</p>
+        <div id="thumbs" class="thumbs" role="group" aria-label="Test images"></div>
+      </div>
+      <div id="pane-upload" class="pane" hidden>
+        <label id="dropzone" class="drop" for="file-input"><strong>Drop a photo here</strong> or choose a file<br><span class="hint">You can also paste an image. It never leaves your device.</span></label>
+        <p class="hint">Use real photos of German signs. Drawings, other countries' signs and non-signs can be misread with high confidence: the model always picks one of its 43 classes.</p>
+        <input id="file-input" type="file" accept="image/*" hidden>
+      </div>
+      <div id="pane-camera" class="pane" hidden>
+        <p id="camera-msg" class="hint">Point the camera at a sign and drag the square over it.</p>
+        <button id="btn-live" class="btn tiny" type="button">Freeze frame</button>
+      </div>
+      <div id="cropper" class="cropper" hidden>
+        <canvas id="crop-canvas" width="320" height="240" aria-label="Drag the square over the sign"></canvas>
+        <div class="row"><label for="crop-size">Square size</label><input id="crop-size" type="range" min="24" max="320" value="200"></div>
+        <p class="hint">The model expects a tight crop of one sign. Photos are shrunk to 64&times;64 with the browser's resampler, which differs slightly from the training pipeline.</p>
+      </div>
+    </div>
+
+    <div class="card demo-output" aria-live="polite">
+      <div class="pred-head">
+        <div><div class="eyebrow">Prediction</div><div id="pred-name" class="pred-name">-</div></div>
+        <div id="pred-conf" class="pred-conf">-</div>
+      </div>
+      <div class="meter" aria-hidden="true"><i id="meter-fill"></i><span id="meter-thr"></span></div>
+      <div class="row between">
+        <span id="pred-badge" class="badge ok">Would answer</span>
+        <label class="row small" for="thr-slider">Answer threshold <input id="thr-slider" type="range" min="0.3" max="0.999" step="0.001" value="0.87"> <output id="thr-value">0.870</output></label>
+      </div>
+      <div id="truth" class="truth" hidden></div>
+      <div id="pred-bars" class="pbars"></div>
+      <div class="views">
+        <figure><canvas id="view-input" width="256" height="256"></canvas><figcaption>What the model sees (64&times;64)</figcaption></figure>
+        <figure><canvas id="view-cam" width="256" height="256"></canvas><figcaption>Where it looked (Grad-CAM)</figcaption></figure>
+      </div>
+      <label class="check"><input id="cam-toggle" type="checkbox" checked> Show Grad-CAM</label>
+      <p id="cam-note" class="hint"></p>
+    </div>
+  </div>
+
+  <div class="card stress">
+    <div class="card-head"><div><h3>Stress lab</h3><p class="sub">Degrade the current image and watch the prediction. Each family matches one in the evaluation's robustness test. Press Sweep to plot the model's confidence across the whole range.</p></div></div>
+    <div id="presets" class="chips"></div>
+    <div id="stress-rows" class="srows"></div>
+    <div id="sweep-wrap" class="sweep" hidden>
+      <h4 id="sweep-title"></h4><ul id="sweep-legend" class="legend"></ul>
+      <div id="sweep-chart" class="chart-host"></div>
+    </div>
+  </div>
+  <p class="hint verify"><button id="btn-verify" class="btn tiny" type="button">Verify against Keras</button> <span id="verify-out">Checks that this page's JavaScript network reproduces the notebook's Keras predictions on the 116 test images.</span></p>
+</section>
+
+<section id="results" class="wrap section">
+  <div class="sec-head"><p class="eyebrow">Results</p><h2>What the experiments showed</h2>
+    <p>Everything below is drawn from the results bundle of the full training run in the <a href="https://colab.research.google.com/github/BriskAM/mait-mini/blob/main/notebooks/traffic_sign_recognition_demo.ipynb" rel="noopener">demo notebook</a>. Hover or focus any mark for details; every chart has a table view.</p></div>
+  <div class="grid">
+    <div id="card-models" class="span-7"></div>
+    <div id="card-ladder" class="span-12"></div>
+    <div id="card-curve-cnn" class="span-6"></div>
+    <div id="card-curve-mn" class="span-6"></div>
+  </div>
+  <div class="sec-head sub-head"><h3>Where it succeeds and fails</h3></div>
+  <div class="grid">
+    <div id="card-f1" class="span-5"></div>
+    <div class="span-7 stack"><div id="card-cm"></div><div id="card-top"></div></div>
+  </div>
+  <div class="sec-head sub-head"><h3>Can you trust it?</h3></div>
+  <div class="grid">
+    <div id="card-rel" class="span-6"></div>
+    <div id="card-cov" class="span-6"></div>
+    <div id="card-rob" class="span-12"></div>
+  </div>
+</section>
+
+<section id="method" class="wrap section">
+  <div class="sec-head"><p class="eyebrow">How it works</p><h2>From raw data to a model you can interrogate</h2></div>
+  <ol class="steps">
+    <li><h3>Verify the data</h3><p>The 320 MB archive is checked against its published checksum, and the counts are asserted: <b data-fact="train_images">39,209</b> training images, <b data-fact="test_images">12,630</b> test images, <b data-fact="classes">43</b> classes.</p></li>
+    <li><h3>Study it</h3><p>Classes are imbalanced (<b data-fact="imbalance" data-fmt="dec">10.7</b>&times; between largest and smallest). Signs are small (median <b data-fact="width_median">43</b> px wide) and lighting varies from almost black to washed out.</p></li>
+    <li><h3>Split by physical sign</h3><p>The training images are <b data-fact="tracks">1,307</b> physical signs photographed about 30 times each. A random split puts <b data-fact="random_split_tracks_leaked">1,291</b> of those signs on both sides, which inflates validation. The split used here holds out whole signs: zero are shared, and every class is represented.</p></li>
+    <li><h3>Train two models</h3><p>A small CNN built from scratch, and MobileNetV2 with ImageNet weights trained in two stages (new head, then fine-tuning). Normalisation and augmentation live inside the model.</p></li>
+    <li><h3>Evaluate once</h3><p>The final model is chosen on validation accuracy. The official test set is scored once, with accuracy, macro-F1, top-3 accuracy and calibration.</p></li>
+    <li><h3>Explain and stress-test</h3><p>Grad-CAM shows where the model looks, a calibration analysis shows when to trust it, and corruption tests show what breaks it.</p></li>
+  </ol>
+  <div class="card arch">
+    <div class="card-head"><div><h3>The network that runs in this page</h3><p class="sub">116,203 parameters, about 41 million multiply-adds per image.</p></div></div>
+    <div class="arch-flow" role="img" aria-label="Architecture: 64 by 64 by 3 input, three blocks of convolution, batch normalisation and max pooling with 32, 64 and 128 filters, global average pooling, a 128 unit dense layer and a 43 way softmax">
+      <div class="blk in"><b>Input</b><span>64&times;64&times;3</span></div><i></i>
+      <div class="blk"><b>Conv 32</b><span>3&times;3 + ReLU<br>BatchNorm<br>MaxPool &rarr; 32&times;32</span></div><i></i>
+      <div class="blk"><b>Conv 64</b><span>3&times;3 + ReLU<br>BatchNorm<br>MaxPool &rarr; 16&times;16</span></div><i></i>
+      <div class="blk"><b>Conv 128</b><span>3&times;3 + ReLU<br>BatchNorm<br>MaxPool &rarr; 8&times;8</span></div><i></i>
+      <div class="blk"><b>Global avg pool</b><span>128 numbers</span></div><i></i>
+      <div class="blk"><b>Dense 128</b><span>ReLU</span></div><i></i>
+      <div class="blk out"><b>Softmax</b><span>43 classes</span></div>
+    </div>
+    <p class="note">The weights were exported from the trained Keras model and the network is re-implemented here in plain JavaScript, with a hand-written Grad-CAM backward pass. The "Verify against Keras" button checks it against the notebook's predictions; offline, it matched Keras to about 3&times;10<sup>-6</sup> in probability on all 116 images. MobileNetV2 and the ensemble appear in the charts but are not loaded here: they are larger and scored lower.</p>
+    <p class="note">Grad-CAM here backpropagates the class score before the softmax, as in the original paper. The notebook uses the post-softmax probability, whose gradient vanishes when the model is nearly certain (for roughly 40% of the samples here), which makes those maps numerically unreliable.</p>
+  </div>
+  <div class="card">
+    <div class="card-head"><div><h3>Key design decisions</h3></div></div>
+    <dl class="decisions">
+      <dt>Grouped validation split</dt><dd>Frames of one sign are near-duplicates. Splitting by sign avoids leakage and gives an honest estimate for unseen signs.</dd>
+      <dt>Macro-F1 beside accuracy</dt><dd>Class sizes differ tenfold; macro-F1 stops common classes hiding weak rare ones.</dd>
+      <dt>64&times;64 cached images</dt><dd>The median sign is only a few dozen pixels wide, so more resolution adds cost without information.</dd>
+      <dt>No horizontal flips</dt><dd>Flipping turns "turn left ahead" into something that looks like "turn right ahead" but keeps the old label.</dd>
+      <dt>Preprocessing inside the model</dt><dd>The exported model takes raw pixels, so there is no separate preprocessing code to drift out of sync.</dd>
+      <dt>Global average pooling</dt><dd>Far fewer parameters than flatten-and-dense: the final CNN has 116 K parameters, the basic one 1.63 M, and is 4 points worse.</dd>
+      <dt>Fine-tune, with BatchNorm frozen</dt><dd>A frozen ImageNet backbone scored about 75% on the test set; fine-tuning lifted it to about 91%.</dd>
+      <dt>Select on validation, test once</dt><dd>No decision used the test set, so the headline number is an unbiased estimate.</dd>
+      <dt>Abstain when unsure</dt><dd>A confidence threshold trades coverage for accuracy, a practical safety mechanism.</dd>
+    </dl>
+  </div>
+  <div class="grid">
+    <div id="card-classes" class="span-7"></div>
+    <div id="card-widths" class="span-5"></div>
+  </div>
+</section>
+
+<section id="gallery" class="wrap section">
+  <div class="sec-head"><p class="eyebrow">Gallery</p><h2>Figures from the notebook</h2><p>Select a figure to enlarge it.</p></div>
+  <div id="gallery-grid" class="gallery"></div>
+</section>
+
+<section id="limits" class="wrap section">
+  <div class="sec-head"><p class="eyebrow">Limits and honesty</p><h2>What this is not</h2></div>
+  <div class="grid">
+    <div class="card span-6"><h3>Limitations</h3>
+      <ul class="plain">
+        <li><b>Cropped signs only.</b> It classifies a tight crop of one sign. Finding signs in a street scene needs a separate detector.</li>
+        <li><b>One country, one dataset.</b> GTSRB is German; other regions' signs are untested.</li>
+        <li><b>Single training run.</b> Two runs of this pipeline differed by about half a point, so small differences between models are noise.</li>
+        <li><b>Weak to noise and occlusion.</b> The model was not trained on them; the robustness chart shows the cost.</li>
+        <li><b>Not safety-certified.</b> This is an educational research project. Do not use it for driving or any safety-critical decision.</li>
+      </ul></div>
+    <div class="card span-6"><h3>Reproduce and extend</h3>
+      <ul class="plain">
+        <li>Open the <a href="https://colab.research.google.com/github/BriskAM/mait-mini/blob/main/notebooks/traffic_sign_recognition_demo.ipynb" rel="noopener">Colab notebook</a> and run all cells on a T4 GPU (about 25 minutes of training in full mode).</li>
+        <li>Rebuild this site's data from a results bundle: <code>python scripts/build_pages_data.py --results &lt;folder&gt;</code>.</li>
+        <li>Check the in-browser network against Keras: <code>node scripts/verify_pages_model.mjs</code>.</li>
+        <li>Ideas next: noise and occlusion augmentation, brightness normalisation, a higher input resolution, several seeds.</li>
+      </ul></div>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="wrap">
+  <p>Data: J. Stallkamp, M. Schlipsing, J. Salmen and C. Igel, "The German Traffic Sign Recognition Benchmark: A multi-class classification competition", IJCNN 2011. Test images shown here are cropped samples from that benchmark, used for illustration.</p>
+  <p>Research and education only. Not a driving system. Everything on this page runs locally in your browser; no images are uploaded.</p>
+</div></footer>
+
+<dialog id="lightbox"><button class="btn tiny close" type="button" aria-label="Close">Close</button><img alt=""><p></p></dialog>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
