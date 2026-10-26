@@ -94,9 +94,7 @@ export function barChart(host, o) {
       let x, y, w, hh, tx, ty, anchor;
       if (horizontal) { w = Math.max(2, v * pw); hh = thick; x = m.l; y = m.t + i * band + (band - thick) / 2; tx = x + w + 6; ty = y + hh / 2 + 4; anchor = "start"; }
       else { hh = Math.max(2, v * ph); w = thick; x = m.l + i * band + (band - thick) / 2; y = m.t + ph - hh; tx = x + w / 2; ty = y - 6; anchor = "middle"; }
-      const r = Math.min(4, (horizontal ? w : hh) / 2), path = horizontal                                  // 4px rounded data end, square at the baseline
-        ? `M${x},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + hh - r} Q${x + w},${y + hh} ${x + w - r},${y + hh} H${x} Z`
-        : `M${x},${y + hh} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + hh} Z`;
+      const path = `M${x},${y} H${x + w} V${y + hh} H${x} Z`;                                              // square-cornered bar
       const hit = horizontal ? s("rect", { x: 0, y: m.t + i * band, width: W, height: band, class: "hit" }) : s("rect", { x: m.l + i * band, y: m.t, width: band, height: ph + m.b, class: "hit" });
       g.append(hit, s("path", { d: path, style: `fill:${color}` }));
       if (o.stepLine && !horizontal && o.stepLine[i] - d.value < 1e-9) ty -= 8;                    // keep the label clear of the running-best line
@@ -143,8 +141,8 @@ export function lineChart(host, o) {
       const pts = se.points.filter((p) => p.y != null), d = pts.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join("");
       if (se.ref) { svg.append(s("path", { d, class: "refline", "clip-path": `url(#${clipId})` })); continue; }
       svg.append(s("path", { d, class: "line", style: `stroke:${se.color}`, "stroke-width": se.width || 2, "clip-path": `url(#${clipId})` }));
-      if (o.markers) for (const p of pts) svg.append(s("circle", { cx: X(p.x), cy: Y(p.y), r: 4, class: "dot", style: `fill:${se.color}` }));
-      if (o.endLabels && se.endLabel !== false) { const last = pts[pts.length - 1]; if (last) svg.append(s("circle", { cx: X(last.x), cy: Y(last.y), r: 4, class: "dot", style: `fill:${se.color}` }), s("text", { x: X(last.x) + 9, y: Y(last.y) + 4, class: "vlabel" }, (o.yFormat || fmt.num)(last.y))); }
+      if (o.markers) for (const p of pts) svg.append(s("rect", { x: X(p.x) - 4, y: Y(p.y) - 4, width: 8, height: 8, class: "dot", style: `fill:${se.color}` }));
+      if (o.endLabels && se.endLabel !== false) { const last = pts[pts.length - 1]; if (last) svg.append(s("rect", { x: X(last.x) - 4, y: Y(last.y) - 4, width: 8, height: 8, class: "dot", style: `fill:${se.color}` }), s("text", { x: X(last.x) + 9, y: Y(last.y) + 4, class: "vlabel" }, (o.yFormat || fmt.num)(last.y))); }
     }
     // crosshair + one tooltip listing every series at the nearest x
     const cross = s("line", { y1: m.t, y2: m.t + ph, class: "cross", opacity: 0 }), live = o.series.filter((se) => !se.ref);

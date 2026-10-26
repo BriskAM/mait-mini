@@ -170,6 +170,22 @@ export async function initDemo(names) {
     out.textContent = `${same} of ${meta.items.length} predictions identical to the notebook's Keras model; largest difference in confidence ${maxd.toExponential(1)}.`;
   });
 
+  // ---- hero ticker: cycles real test images through the model, with Grad-CAM -----------------------------------------------
+  const tkImg = $("#tk-img"), tkCam = $("#tk-cam"), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const diverse = []; { const seen = new Set(); meta.items.forEach((m, i) => { if (!m.hard && !seen.has(m.true)) { seen.add(m.true); diverse.push(i); } }); }
+  const deck = []; { const hards = meta.items.map((m, i) => (m.hard ? i : -1)).filter((i) => i >= 0); let a = 0, b = 0;
+    while (deck.length < 14 && (a < diverse.length || b < hards.length)) { for (let k = 0; k < 3 && a < diverse.length; k++) deck.push(diverse[(a++ * 7) % diverse.length]); if (b < hards.length) deck.push(hards[(b++ * 5) % hards.length]); } }
+  let tkPos = -1, tkIdx = 0;
+  function tick() {
+    tkPos = (tkPos + 1) % deck.length; tkIdx = deck[tkPos]; const m = meta.items[tkIdx], rgb = tileRGB(tkIdx), r = net.gradcam(rgb, null, "logit"), top = topK(r.probs, 1)[0], ok = top.id === m.true;
+    drawOverlay(tkImg, rgb, null, 0); drawOverlay(tkCam, rgb, r.cam, r.side);
+    $("#tk-name").textContent = short(names[top.id]); $("#tk-conf").textContent = fmt.pct(top.p, 1); $("#tk-fill").style.width = top.p * 100 + "%";
+    $("#tk-truth").textContent = (ok ? "correct" : "wrong, truth: " + short(names[m.true])); $("#tk-truth").style.color = ok ? "var(--good)" : "var(--bad)";
+    $("#tk-count").textContent = String(tkPos + 1).padStart(2, "0") + " / " + String(deck.length).padStart(2, "0");
+  }
+  tick(); if (!still) { let timer = setInterval(() => { if (!document.hidden) tick(); }, 2800); const box = $(".ticker"); box.addEventListener("pointerenter", () => clearInterval(timer)); box.addEventListener("pointerleave", () => { timer = setInterval(() => { if (!document.hidden) tick(); }, 2800); }); }
+  $("#tk-open").addEventListener("click", () => { strip.children[tkIdx].pick(); document.getElementById("demo").scrollIntoView({ behavior: still ? "auto" : "smooth" }); });
+
   // first sample
   useTab("samples"); const firstGood = meta.items.findIndex((m) => !m.hard && m.true === 14); strip.children[firstGood >= 0 ? firstGood : 0].pick();
   return { net, setBase };

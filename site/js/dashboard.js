@@ -20,12 +20,8 @@ export function buildDashboard(R, sprite, meta) {
   // ---- KPI tiles --------------------------------------------------------------------------------------------------------
   const sel = M[R.selected], ladder = R.ladder;
   $("#hero-number").textContent = fmt.pct(sel.test_accuracy, 2);
-  $("#kpis").replaceChildren(
-    tile("Test macro-F1", fmt.pct(sel.test_macro_f1, 1), "every class counts equally"),
-    tile("Parameters", fmt.int(F.cnn_params), `${F.tflite_mb} MB as TFLite`),
-    tile("Top-3 accuracy", fmt.pct(sel.test_top3, 1), "right answer in the top three"),
-    tile("Error reduction", Math.round((1 - ladder[0].val_accuracy) / (1 - ladder[5].val_accuracy)) + "×", "naive baseline to final CNN (validation)"));
-  function tile(label, value, sub) { return h("div", { class: "tile" }, h("div", { class: "tile-label" }, label), h("div", { class: "tile-value" }, value), h("div", { class: "tile-sub" }, sub)); }
+  $("#kpi-f1").textContent = fmt.pct(sel.test_macro_f1, 1); $("#kpi-params").textContent = fmt.int(F.cnn_params);
+  $("#kpi-err").textContent = Math.round((1 - ladder[0].val_accuracy) / (1 - ladder[5].val_accuracy)) + "\u00d7";
 
   // ---- model comparison ----------------------------------------------------------------------------------------------------
   const metrics = [
